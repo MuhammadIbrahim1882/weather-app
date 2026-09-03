@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gilgit Weather Forecast — SkyCast Live Analytics</title>
+  <meta name="description" content="Real-time weather forecast for Gilgit, Gilgit-Baltistan, Pakistan and cities worldwide with hourly trends, 7-day predictions, air quality metrics, and interactive weather maps." />
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="theme-sunny">
+  <!-- Dynamic Ambient Background Elements -->
+  <div class="bg-effects" id="bgEffects">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+    <div class="weather-particles" id="weatherParticles"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Top Emergency Disaster Banner -->
+    <div id="disasterAlertBanner" class="disaster-banner hidden"></div>
+
+    <!-- Navigation Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <i class="fa-solid fa-mountain-sun"></i>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">SkyCast</span>
+          <span class="brand-subtitle">Gilgit & Northern Areas</span>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-wrapper">
+        <div class="search-bar">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="Search Gilgit, Hunza, Skardu or any city..." 
+            autocomplete="off" 
+            aria-label="Search city name"
+          />
+          <button id="clearSearchBtn" class="clear-btn hidden" title="Clear search">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+          <button id="geoBtn" class="geo-btn" title="Use current location">
+            <i class="fa-solid fa-location-crosshairs"></i>
+          </button>
+        </div>
+        <!-- Auto-complete Suggestions Dropdown -->
+        <div id="searchResults" class="search-results hidden"></div>
+      </div>
+
+      <!-- Quick Controls -->
+      <div class="header-controls">
+        <button id="urduVoiceBtn" class="urdu-voice-btn" title="Urdu Voice Assistant — آوازِ موسم">
+          <i class="fa-solid fa-microphone-lines"></i>
+          <span>اردو وائس</span>
+        </button>
+        <div class="unit-toggle" id="unitToggle">
+          <button class="unit-btn active" data-unit="C">°C</button>
+          <button class="unit-btn" data-unit="F">°F</button>
+        </div>
+        <button id="favoriteBtn" class="action-btn" title="Bookmark location">
+          <i class="fa-regular fa-star" id="favoriteIcon"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Quick Popular Cities Bar -->
+    <div class="quick-cities-bar">
+      <span class="quick-cities-label"><i class="fa-solid fa-location-dot"></i> Popular:</span>
+      <div class="quick-cities-list">
+        <button class="quick-loc-btn" data-name="Gilgit" data-country="Gilgit-Baltistan, Pakistan" data-lat="35.9187" data-lon="74.3125"><i class="fa-solid fa-mountain"></i> Gilgit</button>
+        <button class="quick-loc-btn" data-name="Hunza" data-country="Gilgit-Baltistan, Pakistan" data-lat="36.3167" data-lon="74.6500"><i class="fa-solid fa-snowflake"></i> Hunza</button>
+        <button class="quick-loc-btn" data-name="Skardu" data-country="Gilgit-Baltistan, Pakistan" data-lat="35.2979" data-lon="75.6337"><i class="fa-solid fa-mountain"></i> Skardu</button>
+        <button class="quick-loc-btn" data-name="Islamabad" data-country="Federal Capital, Pakistan" data-lat="33.6844" data-lon="73.0479"><i class="fa-solid fa-city"></i> Islamabad</button>
+        <button class="quick-loc-btn" data-name="Lahore" data-country="Punjab, Pakistan" data-lat="31.5204" data-lon="74.3587"><i class="fa-solid fa-city"></i> Lahore</button>
+        <button class="quick-loc-btn" data-name="Karachi" data-country="Sindh, Pakistan" data-lat="24.8607" data-lon="67.0011"><i class="fa-solid fa-umbrella-beach"></i> Karachi</button>
+      </div>
+    </div>
+
+    <!-- Favorite Locations Bar -->
+    <section class="favorites-bar hidden" id="favoritesBar">
+      <span class="favorites-label"><i class="fa-solid fa-star"></i> Saved:</span>
+      <div class="favorites-list" id="favoritesList"></div>
+    </section>
+
+    <!-- Main Content Area -->
+    <main class="main-layout" id="mainContent">
+      <!-- Loading Skeleton Overlay -->
+      <div id="loadingSpinner" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <p>Fetching weather insights...</p>
+      </div>
+
+      <!-- Top Row: Hero Current Weather + Quick Stats -->
+      <div class="grid-top">
+        <!-- Current Weather Hero Card -->
+        <section class="card hero-card" id="heroCard">
+          <div class="hero-header">
+            <div class="location-details">
+              <h1 id="cityName" class="city-name">Loading...</h1>
+              <p id="cityMeta" class="city-meta">Fetching details...</p>
+              <div class="live-badge">
+                <span class="pulse-dot"></span> LIVE NOW
+              </div>
+            </div>
+            <div class="hero-weather-icon" id="heroWeatherIcon">
+              <i class="fa-solid fa-sun weather-glow-icon"></i>
+            </div>
+          </div>
+
+          <div class="hero-body">
+            <div class="temp-display">
+              <span id="currentTemp" class="current-temp">--</span>
+              <span id="tempUnit" class="temp-unit">°C</span>
+            </div>
+            <div class="weather-summary">
+              <h2 id="weatherCondition" class="condition-title">Clear Sky</h2>
+              <div class="temp-range">
+                <span><i class="fa-solid fa-arrow-up"></i> H: <strong id="highTemp">--°</strong></span>
+                <span><i class="fa-solid fa-arrow-down"></i> L: <strong id="lowTemp">--°</strong></span>
+                <span>Feels like: <strong id="feelsLike">--°</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-footer">
+            <div class="quick-chip">
+              <i class="fa-solid fa-wind"></i>
+              <span>Wind: <strong id="heroWind">-- km/h</strong></span>
+            </div>
+            <div class="quick-chip">
+              <i class="fa-solid fa-droplet"></i>
+              <span>Humidity: <strong id="heroHumidity">--%</strong></span>
+            </div>
+            <div class="quick-chip">
+              <i class="fa-solid fa-sun"></i>
+              <span>UV Index: <strong id="heroUv">--</strong></span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Air Quality & Solar Arc Card -->
+        <section class="card dynamic-card">
+          <!-- Solar Arc Card -->
+          <div class="card-section solar-section">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-sun-plant-wilt"></i> Sun & Daylight</h3>
+            </div>
+            <div class="solar-arc-container">
+              <svg class="solar-arc-svg" viewBox="0 0 200 100">
+                <path d="M 10 90 A 90 90 0 0 1 190 90" class="arc-bg" />
+                <path d="M 10 90 A 90 90 0 0 1 190 90" class="arc-progress" id="solarArcProgress" />
+                <circle cx="10" cy="90" r="7" class="sun-marker" id="sunMarker" />
+              </svg>
+              <div class="solar-times">
+                <div class="solar-item">
+                  <i class="fa-solid fa-sunrise"></i>
+                  <div>
+                    <span class="label">Sunrise</span>
+                    <strong id="sunriseTime">--:--</strong>
+                  </div>
+                </div>
+                <div class="solar-item text-right">
+                  <i class="fa-solid fa-sunset"></i>
+                  <div>
+                    <span class="label">Sunset</span>
+                    <strong id="sunsetTime">--:--</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Air Quality Section -->
+          <div class="card-section aqi-section">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-wind"></i> Air Quality Index</h3>
+              <span id="aqiStatusBadge" class="aqi-badge status-good">Good</span>
+            </div>
+            <div class="aqi-body">
+              <div class="aqi-score-box">
+                <span id="aqiValue" class="aqi-value">--</span>
+                <span class="aqi-max">US AQI</span>
+              </div>
+              <div class="aqi-meter-wrapper">
+                <div class="aqi-meter-bar">
+                  <div id="aqiMeterIndicator" class="meter-indicator" style="left: 0%;"></div>
+                </div>
+                <div class="aqi-scale-labels">
+                  <span>0</span>
+                  <span>50</span>
+                  <span>100</span>
+                  <span>150</span>
+                  <span>200+</span>
+                </div>
+              </div>
+            </div>
+            <div class="aqi-grid">
+              <div class="aqi-item">
+                <span>PM2.5</span>
+                <strong id="pm25">-- µg/m³</strong>
+              </div>
+              <div class="aqi-item">
+                <span>PM10</span>
+                <strong id="pm10">-- µg/m³</strong>
+              </div>
+              <div class="aqi-item">
+                <span>O3</span>
+                <strong id="o3">-- µg/m³</strong>
+              </div>
+              <div class="aqi-item">
+                <span>NO2</span>
+                <strong id="no2">-- µg/m³</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Disaster Alert System Hub -->
+      <div id="disasterAlertHub"></div>
+
+      <!-- 14-Day Microclimate Weather Prediction Engine -->
+      <div id="predictionEngineSection"></div>
+
+      <!-- Hourly Forecast & Trend Chart -->
+      <section class="card hourly-section">
+        <div class="card-header">
+          <div class="header-with-tabs">
+            <h3><i class="fa-solid fa-clock"></i> 24-Hour Forecast</h3>
+            <div class="tab-group" id="hourlyTabs">
+              <button class="tab-btn active" data-tab="temperature"><i class="fa-solid fa-temperature-half"></i> Temp</button>
+              <button class="tab-btn" data-tab="precipitation"><i class="fa-solid fa-cloud-rain"></i> Rain %</button>
+              <button class="tab-btn" data-tab="wind"><i class="fa-solid fa-wind"></i> Wind</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scrollable Hourly Cards -->
+        <div class="hourly-cards-wrapper" id="hourlyCards">
+          <!-- Dynamically Generated -->
+        </div>
+
+        <!-- Interactive Chart Container -->
+        <div class="chart-container">
+          <canvas id="hourlyChart"></canvas>
+        </div>
+      </section>
+
+      <!-- Bottom Grid: 7-Day Forecast & Detailed Weather Grid -->
+      <div class="grid-bottom">
+        <!-- 7-Day Extended Forecast Card -->
+        <section class="card daily-forecast-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-calendar-week"></i> 7-Day Extended Forecast</h3>
+          </div>
+          <div class="daily-list" id="dailyList">
+            <!-- Dynamically populated -->
+          </div>
+        </section>
+
+        <!-- Detailed Weather Metrics Grid -->
+        <section class="metrics-grid">
+          <!-- Wind Dial Card -->
+          <div class="card metric-card">
+            <div class="metric-header">
+              <span class="metric-title"><i class="fa-solid fa-compass"></i> Wind & Gusts</span>
+            </div>
+            <div class="wind-body">
+              <div class="compass-wrapper">
+                <div class="compass-dial">
+                  <span class="cardinal n">N</span>
+                  <span class="cardinal e">E</span>
+                  <span class="cardinal s">S</span>
+                  <span class="cardinal w">W</span>
+                  <div class="compass-pointer" id="compassNeedle">
+                    <i class="fa-solid fa-location-arrow"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="wind-info">
+                <span id="windSpeed" class="metric-big">-- km/h</span>
+                <span id="windDirectionText" class="metric-sub">Direction: --°</span>
+                <span class="metric-extra">Gusts: <strong id="windGusts">-- km/h</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- UV Index Meter Card -->
+          <div class="card metric-card">
+            <div class="metric-header">
+              <span class="metric-title"><i class="fa-solid fa-sun"></i> UV Index</span>
+            </div>
+            <div class="uv-body">
+              <span id="uvValue" class="metric-big">--</span>
+              <span id="uvCategory" class="uv-category cat-low">Low</span>
+              <div class="uv-bar-wrapper">
+                <div class="uv-bar">
+                  <div id="uvBarFill" class="uv-bar-fill" style="width: 0%;"></div>
+                </div>
+              </div>
+              <p id="uvAdvice" class="metric-sub">Minimal sun protection needed.</p>
+            </div>
+          </div>
+
+          <!-- Humidity & Dew Point -->
+          <div class="card metric-card">
+            <div class="metric-header">
+              <span class="metric-title"><i class="fa-solid fa-droplet"></i> Humidity</span>
+            </div>
+            <div class="humidity-body">
+              <span id="humidityValue" class="metric-big">--%</span>
+              <div class="progress-bar-container">
+                <div id="humidityBar" class="progress-bar-fill" style="width: 0%;"></div>
+              </div>
+              <span id="dewPointText" class="metric-sub">Dew point: --°</span>
+            </div>
+          </div>
+
+          <!-- Pressure -->
+          <div class="card metric-card">
+            <div class="metric-header">
+              <span class="metric-title"><i class="fa-solid fa-gauge-high"></i> Pressure</span>
+            </div>
+            <div class="pressure-body">
+              <span id="pressureValue" class="metric-big">-- hPa</span>
+              <span id="pressureStatus" class="metric-sub">Normal level</span>
+            </div>
+          </div>
+
+          <!-- Visibility -->
+          <div class="card metric-card">
+            <div class="metric-header">
+              <span class="metric-title"><i class="fa-solid fa-eye"></i> Visibility</span>
+            </div>
+            <div class="visibility-body">
+              <span id="visibilityValue" class="metric-big">-- km</span>
+              <span id="visibilityStatus" class="metric-sub">Clear view</span>
+            </div>
+          </div>
+
+          <!-- Cloud Cover -->
+          <div class="card metric-card">
+            <div class="metric-header">
+              <span class="metric-title"><i class="fa-solid fa-cloud"></i> Cloud Cover</span>
+            </div>
+            <div class="cloud-body">
+              <span id="cloudCoverValue" class="metric-big">--%</span>
+              <div class="progress-bar-container">
+                <div id="cloudBar" class="progress-bar-fill" style="width: 0%;"></div>
+              </div>
+              <span id="cloudStatus" class="metric-sub">Clear skies</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Interactive Map Section -->
+      <section class="card map-section">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-map-location-dot"></i> Interactive Location Map</h3>
+          <span class="map-subtitle" id="mapCoordsLabel">Coordinates: --, --</span>
+        </div>
+        <div id="weatherMap" class="weather-map-container"></div>
+      </section>
+    </main>
+
+    <!-- Floating Urdu Voice Assistant Button -->
+    <button id="floatingUrduMicBtn" class="floating-urdu-mic" title="Urdu Voice Assistant — آوازِ موسم">
+      <i class="fa-solid fa-microphone-lines"></i>
+      <span>آوازِ موسم</span>
+    </button>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>SkyCast Weather &copy; 2026. Powered by Open-Meteo API & OpenStreetMap.</p>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="chart-manager.js"></script>
+  <script src="map-manager.js"></script>
+  <script src="disaster-alert-manager.js"></script>
+  <script src="prediction-engine.js"></script>
+  <script src="urdu-voice-assistant.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
