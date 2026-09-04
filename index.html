@@ -1,409 +1,404 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gilgit Weather Forecast — SkyCast Live Analytics</title>
-  <meta name="description" content="Real-time weather forecast for Gilgit, Gilgit-Baltistan, Pakistan and cities worldwide with hourly trends, 7-day predictions, air quality metrics, and interactive weather maps." />
-  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CropDoctor AI - Instant Plant Disease Detection from leaf photos using computer vision, interactive lesion heatmaps, organic treatment guides, and AI Agronomist voice assistant.">
+  <meta name="keywords" content="crop disease detector, plant AI, leaf photo analysis, tomato blight, corn rust, farming AI, agronomist bot">
+  <title>CropDoctor AI - Intelligent Plant Disease Detector & Agri-Advisor</title>
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  
-  <!-- Leaflet Map CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body class="theme-sunny">
-  <!-- Dynamic Ambient Background Elements -->
-  <div class="bg-effects" id="bgEffects">
-    <div class="glow-orb orb-1"></div>
-    <div class="glow-orb orb-2"></div>
-    <div class="glow-orb orb-3"></div>
-    <div class="weather-particles" id="weatherParticles"></div>
-  </div>
+<body>
 
-  <div class="app-container">
-    <!-- Top Emergency Disaster Banner -->
-    <div id="disasterAlertBanner" class="disaster-banner hidden"></div>
-
-    <!-- Navigation Header -->
-    <header class="app-header">
-      <div class="brand">
-        <div class="brand-icon">
-          <i class="fa-solid fa-mountain-sun"></i>
-        </div>
-        <div class="brand-text">
-          <span class="brand-title">SkyCast</span>
-          <span class="brand-subtitle">Gilgit & Northern Areas</span>
-        </div>
+  <!-- Top Navigation Navbar -->
+  <header class="app-navbar">
+    <div class="brand-container">
+      <div class="brand-icon-wrapper">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <path d="M17,8C14,8 10,10 7.5,13C5,16 4.5,19 4.5,19C4.5,19 7.5,19.5 10.5,17C13.5,14.5 15.5,10.5 15.5,7.5C15.5,7.5 17,8 17,8M3,21C3,21 3.5,16.5 7,12.5C10.5,8.5 16,6.5 16,6.5C16,6.5 18,3.5 21,3C21.5,5.5 19.5,8.5 19.5,8.5C19.5,8.5 18,14.5 13.5,18.5C9,22.5 3,21 3,21Z"/>
+        </svg>
       </div>
-
-      <!-- Search Bar -->
-      <div class="search-wrapper">
-        <div class="search-bar">
-          <i class="fa-solid fa-magnifying-glass search-icon"></i>
-          <input 
-            type="text" 
-            id="searchInput" 
-            placeholder="Search Gilgit, Hunza, Skardu or any city..." 
-            autocomplete="off" 
-            aria-label="Search city name"
-          />
-          <button id="clearSearchBtn" class="clear-btn hidden" title="Clear search">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-          <button id="geoBtn" class="geo-btn" title="Use current location">
-            <i class="fa-solid fa-location-crosshairs"></i>
-          </button>
-        </div>
-        <!-- Auto-complete Suggestions Dropdown -->
-        <div id="searchResults" class="search-results hidden"></div>
-      </div>
-
-      <!-- Quick Controls -->
-      <div class="header-controls">
-        <button id="urduVoiceBtn" class="urdu-voice-btn" title="Urdu Voice Assistant — آوازِ موسم">
-          <i class="fa-solid fa-microphone-lines"></i>
-          <span>اردو وائس</span>
-        </button>
-        <div class="unit-toggle" id="unitToggle">
-          <button class="unit-btn active" data-unit="C">°C</button>
-          <button class="unit-btn" data-unit="F">°F</button>
-        </div>
-        <button id="favoriteBtn" class="action-btn" title="Bookmark location">
-          <i class="fa-regular fa-star" id="favoriteIcon"></i>
-        </button>
-      </div>
-    </header>
-
-    <!-- Quick Popular Cities Bar -->
-    <div class="quick-cities-bar">
-      <span class="quick-cities-label"><i class="fa-solid fa-location-dot"></i> Popular:</span>
-      <div class="quick-cities-list">
-        <button class="quick-loc-btn" data-name="Gilgit" data-country="Gilgit-Baltistan, Pakistan" data-lat="35.9187" data-lon="74.3125"><i class="fa-solid fa-mountain"></i> Gilgit</button>
-        <button class="quick-loc-btn" data-name="Hunza" data-country="Gilgit-Baltistan, Pakistan" data-lat="36.3167" data-lon="74.6500"><i class="fa-solid fa-snowflake"></i> Hunza</button>
-        <button class="quick-loc-btn" data-name="Skardu" data-country="Gilgit-Baltistan, Pakistan" data-lat="35.2979" data-lon="75.6337"><i class="fa-solid fa-mountain"></i> Skardu</button>
-        <button class="quick-loc-btn" data-name="Islamabad" data-country="Federal Capital, Pakistan" data-lat="33.6844" data-lon="73.0479"><i class="fa-solid fa-city"></i> Islamabad</button>
-        <button class="quick-loc-btn" data-name="Lahore" data-country="Punjab, Pakistan" data-lat="31.5204" data-lon="74.3587"><i class="fa-solid fa-city"></i> Lahore</button>
-        <button class="quick-loc-btn" data-name="Karachi" data-country="Sindh, Pakistan" data-lat="24.8607" data-lon="67.0011"><i class="fa-solid fa-umbrella-beach"></i> Karachi</button>
+      <div>
+        <span class="brand-title">CropDoctor AI</span>
+        <span class="brand-badge">v2.5 Vision Engine</span>
       </div>
     </div>
 
-    <!-- Favorite Locations Bar -->
-    <section class="favorites-bar hidden" id="favoritesBar">
-      <span class="favorites-label"><i class="fa-solid fa-star"></i> Saved:</span>
-      <div class="favorites-list" id="favoritesList"></div>
-    </section>
+    <nav class="nav-controls">
+      <button class="nav-link-btn active" onclick="scrollToSection('scanner-section')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/></svg>
+        AI Scanner
+      </button>
+      <button class="nav-link-btn" onclick="scrollToSection('risk-section')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+        Climate Risk
+      </button>
+      <button class="nav-link-btn" onclick="scrollToSection('kb-section')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Knowledge Base
+      </button>
+      <button class="nav-link-btn" onclick="scrollToSection('history-section')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        Scan History
+      </button>
 
-    <!-- Main Content Area -->
-    <main class="main-layout" id="mainContent">
-      <!-- Loading Skeleton Overlay -->
-      <div id="loadingSpinner" class="loading-overlay hidden">
-        <div class="spinner"></div>
-        <p>Fetching weather insights...</p>
+      <select id="langSelect" class="lang-selector" onchange="switchAppLanguage(this.value)">
+        <option value="en-US">🇬🇧 English</option>
+        <option value="ur-PK">🇵🇰 اردو (Urdu)</option>
+      </select>
+    </nav>
+  </header>
+
+  <!-- Hero Header -->
+  <section class="hero-banner">
+    <h1 class="hero-headline">Protect Your Crops with <span>AI Leaf Analysis</span></h1>
+    <p class="hero-subtext">Snap or upload a leaf photo to detect plant diseases instantly, map lesion heatmaps, and get expert treatment advice.</p>
+    
+    <div class="stats-ticker">
+      <div class="stat-item">
+        <span class="stat-val">15+</span>
+        <span class="stat-lbl">Crops & Pathogens</span>
       </div>
-
-      <!-- Top Row: Hero Current Weather + Quick Stats -->
-      <div class="grid-top">
-        <!-- Current Weather Hero Card -->
-        <section class="card hero-card" id="heroCard">
-          <div class="hero-header">
-            <div class="location-details">
-              <h1 id="cityName" class="city-name">Loading...</h1>
-              <p id="cityMeta" class="city-meta">Fetching details...</p>
-              <div class="live-badge">
-                <span class="pulse-dot"></span> LIVE NOW
-              </div>
-            </div>
-            <div class="hero-weather-icon" id="heroWeatherIcon">
-              <i class="fa-solid fa-sun weather-glow-icon"></i>
-            </div>
-          </div>
-
-          <div class="hero-body">
-            <div class="temp-display">
-              <span id="currentTemp" class="current-temp">--</span>
-              <span id="tempUnit" class="temp-unit">°C</span>
-            </div>
-            <div class="weather-summary">
-              <h2 id="weatherCondition" class="condition-title">Clear Sky</h2>
-              <div class="temp-range">
-                <span><i class="fa-solid fa-arrow-up"></i> H: <strong id="highTemp">--°</strong></span>
-                <span><i class="fa-solid fa-arrow-down"></i> L: <strong id="lowTemp">--°</strong></span>
-                <span>Feels like: <strong id="feelsLike">--°</strong></span>
-              </div>
-            </div>
-          </div>
-
-          <div class="hero-footer">
-            <div class="quick-chip">
-              <i class="fa-solid fa-wind"></i>
-              <span>Wind: <strong id="heroWind">-- km/h</strong></span>
-            </div>
-            <div class="quick-chip">
-              <i class="fa-solid fa-droplet"></i>
-              <span>Humidity: <strong id="heroHumidity">--%</strong></span>
-            </div>
-            <div class="quick-chip">
-              <i class="fa-solid fa-sun"></i>
-              <span>UV Index: <strong id="heroUv">--</strong></span>
-            </div>
-          </div>
-        </section>
-
-        <!-- Air Quality & Solar Arc Card -->
-        <section class="card dynamic-card">
-          <!-- Solar Arc Card -->
-          <div class="card-section solar-section">
-            <div class="card-header">
-              <h3><i class="fa-solid fa-sun-plant-wilt"></i> Sun & Daylight</h3>
-            </div>
-            <div class="solar-arc-container">
-              <svg class="solar-arc-svg" viewBox="0 0 200 100">
-                <path d="M 10 90 A 90 90 0 0 1 190 90" class="arc-bg" />
-                <path d="M 10 90 A 90 90 0 0 1 190 90" class="arc-progress" id="solarArcProgress" />
-                <circle cx="10" cy="90" r="7" class="sun-marker" id="sunMarker" />
-              </svg>
-              <div class="solar-times">
-                <div class="solar-item">
-                  <i class="fa-solid fa-sunrise"></i>
-                  <div>
-                    <span class="label">Sunrise</span>
-                    <strong id="sunriseTime">--:--</strong>
-                  </div>
-                </div>
-                <div class="solar-item text-right">
-                  <i class="fa-solid fa-sunset"></i>
-                  <div>
-                    <span class="label">Sunset</span>
-                    <strong id="sunsetTime">--:--</strong>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Air Quality Section -->
-          <div class="card-section aqi-section">
-            <div class="card-header">
-              <h3><i class="fa-solid fa-wind"></i> Air Quality Index</h3>
-              <span id="aqiStatusBadge" class="aqi-badge status-good">Good</span>
-            </div>
-            <div class="aqi-body">
-              <div class="aqi-score-box">
-                <span id="aqiValue" class="aqi-value">--</span>
-                <span class="aqi-max">US AQI</span>
-              </div>
-              <div class="aqi-meter-wrapper">
-                <div class="aqi-meter-bar">
-                  <div id="aqiMeterIndicator" class="meter-indicator" style="left: 0%;"></div>
-                </div>
-                <div class="aqi-scale-labels">
-                  <span>0</span>
-                  <span>50</span>
-                  <span>100</span>
-                  <span>150</span>
-                  <span>200+</span>
-                </div>
-              </div>
-            </div>
-            <div class="aqi-grid">
-              <div class="aqi-item">
-                <span>PM2.5</span>
-                <strong id="pm25">-- µg/m³</strong>
-              </div>
-              <div class="aqi-item">
-                <span>PM10</span>
-                <strong id="pm10">-- µg/m³</strong>
-              </div>
-              <div class="aqi-item">
-                <span>O3</span>
-                <strong id="o3">-- µg/m³</strong>
-              </div>
-              <div class="aqi-item">
-                <span>NO2</span>
-                <strong id="no2">-- µg/m³</strong>
-              </div>
-            </div>
-          </div>
-        </section>
+      <div class="stat-item">
+        <span class="stat-val">96.4%</span>
+        <span class="stat-lbl">Diagnostic Accuracy</span>
       </div>
+      <div class="stat-item">
+        <span class="stat-val">Instant</span>
+        <span class="stat-lbl">Lesion Heatmap</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-val">Bilingual</span>
+        <span class="stat-lbl">English & Urdu Voice</span>
+      </div>
+    </div>
+  </section>
 
-      <!-- Disaster Alert System Hub -->
-      <div id="disasterAlertHub"></div>
+  <!-- Main Detector Workspace -->
+  <main class="main-container" id="scanner-section">
+    <div class="detector-grid">
 
-      <!-- 14-Day Microclimate Weather Prediction Engine -->
-      <div id="predictionEngineSection"></div>
+      <!-- LEFT COLUMN: Scanner & Image Upload Box -->
+      <section class="glass-card">
+        <div class="card-header-flex">
+          <div class="card-title-flex">
+            <svg class="card-title-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Leaf Scanner
+          </div>
+          <span id="scanStatusBadge" style="font-size: 0.8rem; color: var(--mint-accent); font-weight: 700;">● Engine Ready</span>
+        </div>
 
-      <!-- Hourly Forecast & Trend Chart -->
-      <section class="card hourly-section">
-        <div class="card-header">
-          <div class="header-with-tabs">
-            <h3><i class="fa-solid fa-clock"></i> 24-Hour Forecast</h3>
-            <div class="tab-group" id="hourlyTabs">
-              <button class="tab-btn active" data-tab="temperature"><i class="fa-solid fa-temperature-half"></i> Temp</button>
-              <button class="tab-btn" data-tab="precipitation"><i class="fa-solid fa-cloud-rain"></i> Rain %</button>
-              <button class="tab-btn" data-tab="wind"><i class="fa-solid fa-wind"></i> Wind</button>
+        <!-- Drag & Drop Upload Zone -->
+        <div class="dropzone-container" id="dropzone">
+          <div class="scan-beam" id="scanBeam"></div>
+          
+          <div id="dropzonePrompt">
+            <div class="dropzone-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
+            <div class="dropzone-text">Drag & Drop Leaf Photo Here</div>
+            <div class="dropzone-subtext">Supports PNG, JPG, WEBP (Max 15MB)</div>
+            
+            <button class="btn-emerald" onclick="document.getElementById('fileInput').click()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Browse Photo
+            </button>
+            <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+          </div>
+
+          <!-- Camera Feed Stream -->
+          <div class="camera-view-container" id="cameraContainer">
+            <video id="cameraVideo" class="camera-video" autoplay playsinline></video>
+            <div class="camera-target-frame"></div>
+          </div>
+
+          <!-- Preview & Canvas Layer -->
+          <div class="preview-container" id="previewContainer">
+            <img id="sourcePreviewImg" class="preview-img" alt="Leaf Preview">
+            <canvas id="heatmapCanvas" class="heatmap-canvas" style="display: none;"></canvas>
+
+            <div class="view-toggle-bar">
+              <button class="view-btn active" id="btnViewOriginal" onclick="toggleViewMode('original')">Original Photo</button>
+              <button class="view-btn" id="btnViewHeatmap" onclick="toggleViewMode('heatmap')">AI Lesion Heatmap</button>
             </div>
           </div>
         </div>
 
-        <!-- Scrollable Hourly Cards -->
-        <div class="hourly-cards-wrapper" id="hourlyCards">
-          <!-- Dynamically Generated -->
+        <div class="scanner-actions">
+          <button class="btn-outline" id="btnStartCam" onclick="toggleCameraStream()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Live Camera Capture
+          </button>
+          <button class="btn-outline" id="btnResetScan" onclick="resetScanner()" style="display: none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v6h6"/><path d="M21 12A9 9 0 0 0 6 5.3L3 8"/><path d="M21 22v-6h-6"/><path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"/></svg>
+            New Scan
+          </button>
         </div>
 
-        <!-- Interactive Chart Container -->
-        <div class="chart-container">
-          <canvas id="hourlyChart"></canvas>
+        <!-- Demo Samples Row for Immediate 1-Click Testing -->
+        <div class="sample-gallery-title">Try Instant Demo Samples</div>
+        <div class="samples-row">
+          <div class="sample-chip" onclick="loadDemoSample('tomato_late_blight')">
+            <img src="tomato_late_blight.png" class="sample-thumb" alt="Tomato Blight">
+            <div class="sample-info">
+              <span class="sample-crop">Tomato</span>
+              <span class="sample-dis">Late Blight</span>
+            </div>
+          </div>
+          <div class="sample-chip" onclick="loadDemoSample('corn_common_rust')">
+            <img src="corn_common_rust.png" class="sample-thumb" alt="Corn Rust">
+            <div class="sample-info">
+              <span class="sample-crop">Corn</span>
+              <span class="sample-dis">Common Rust</span>
+            </div>
+          </div>
+          <div class="sample-chip" onclick="loadDemoSample('healthy_plant')">
+            <img src="healthy_pepper.png" class="sample-thumb" alt="Healthy Pepper">
+            <div class="sample-info">
+              <span class="sample-crop">Pepper</span>
+              <span class="sample-dis">Healthy Leaf</span>
+            </div>
+          </div>
         </div>
       </section>
 
-      <!-- Bottom Grid: 7-Day Forecast & Detailed Weather Grid -->
-      <div class="grid-bottom">
-        <!-- 7-Day Extended Forecast Card -->
-        <section class="card daily-forecast-card">
-          <div class="card-header">
-            <h3><i class="fa-solid fa-calendar-week"></i> 7-Day Extended Forecast</h3>
+      <!-- RIGHT COLUMN: AI Diagnostic Results -->
+      <section class="glass-card">
+        <div class="card-header-flex">
+          <div class="card-title-flex">
+            <svg class="card-title-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            AI Diagnostic Report
           </div>
-          <div class="daily-list" id="dailyList">
-            <!-- Dynamically populated -->
-          </div>
-        </section>
+          <button class="btn-outline" id="btnExportPDF" onclick="exportAdvisoryReport()" style="display: none; padding: 0.35rem 0.75rem; font-size: 0.8rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Save PDF Report
+          </button>
+        </div>
 
-        <!-- Detailed Weather Metrics Grid -->
-        <section class="metrics-grid">
-          <!-- Wind Dial Card -->
-          <div class="card metric-card">
-            <div class="metric-header">
-              <span class="metric-title"><i class="fa-solid fa-compass"></i> Wind & Gusts</span>
-            </div>
-            <div class="wind-body">
-              <div class="compass-wrapper">
-                <div class="compass-dial">
-                  <span class="cardinal n">N</span>
-                  <span class="cardinal e">E</span>
-                  <span class="cardinal s">S</span>
-                  <span class="cardinal w">W</span>
-                  <div class="compass-pointer" id="compassNeedle">
-                    <i class="fa-solid fa-location-arrow"></i>
-                  </div>
-                </div>
+        <!-- Initial Blank State Placeholder -->
+        <div class="results-placeholder" id="resultsPlaceholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <h3>Awaiting Leaf Photo</h3>
+          <p style="font-size: 0.9rem;">Upload a photo or select a demo sample on the left to trigger computer vision diagnosis.</p>
+        </div>
+
+        <!-- Filled Diagnostic Content -->
+        <div class="result-card-content" id="resultContent">
+          
+          <div class="diagnosis-header-card">
+            <div>
+              <div class="crop-badge-title" id="resCropName">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17,8C14,8 10,10 7.5,13C5,16 4.5,19 4.5,19C4.5,19 7.5,19.5 10.5,17C13.5,14.5 15.5,10.5 15.5,7.5C15.5,7.5 17,8 17,8Z"/></svg>
+                <span id="txtCrop">TOMATO</span> • <span id="txtPathogen">FUNGAL</span>
               </div>
-              <div class="wind-info">
-                <span id="windSpeed" class="metric-big">-- km/h</span>
-                <span id="windDirectionText" class="metric-sub">Direction: --°</span>
-                <span class="metric-extra">Gusts: <strong id="windGusts">-- km/h</strong></span>
-              </div>
+              <h2 class="disease-main-name" id="txtDiseaseName">Late Blight</h2>
+              <div class="disease-urdu-sub" id="txtDiseaseUrdu">ٹماٹر کا دیرینہ جھلساؤ</div>
+            </div>
+
+            <div class="confidence-ring-box">
+              <div class="confidence-number" id="txtConfidence">94%</div>
+              <div class="confidence-label">Match Score</div>
             </div>
           </div>
 
-          <!-- UV Index Meter Card -->
-          <div class="card metric-card">
-            <div class="metric-header">
-              <span class="metric-title"><i class="fa-solid fa-sun"></i> UV Index</span>
+          <!-- Severity Bar -->
+          <div class="severity-bar-box">
+            <div class="severity-label-flex">
+              <span>Pathogen Severity:</span>
+              <span class="severity-badge critical" id="badgeSeverity">CRITICAL</span>
             </div>
-            <div class="uv-body">
-              <span id="uvValue" class="metric-big">--</span>
-              <span id="uvCategory" class="uv-category cat-low">Low</span>
-              <div class="uv-bar-wrapper">
-                <div class="uv-bar">
-                  <div id="uvBarFill" class="uv-bar-fill" style="width: 0%;"></div>
-                </div>
-              </div>
-              <p id="uvAdvice" class="metric-sub">Minimal sun protection needed.</p>
+            <div class="severity-track">
+              <div class="severity-fill" id="fillSeverity" style="width: 85%; background: var(--red-danger);"></div>
             </div>
           </div>
 
-          <!-- Humidity & Dew Point -->
-          <div class="card metric-card">
-            <div class="metric-header">
-              <span class="metric-title"><i class="fa-solid fa-droplet"></i> Humidity</span>
+          <!-- Infection Metrics Grid -->
+          <div class="metrics-row">
+            <div class="metric-card">
+              <div class="metric-val" id="metricGreen" style="color: var(--mint-accent);">65%</div>
+              <div class="metric-lbl">Healthy Green</div>
             </div>
-            <div class="humidity-body">
-              <span id="humidityValue" class="metric-big">--%</span>
-              <div class="progress-bar-container">
-                <div id="humidityBar" class="progress-bar-fill" style="width: 0%;"></div>
-              </div>
-              <span id="dewPointText" class="metric-sub">Dew point: --°</span>
+            <div class="metric-card">
+              <div class="metric-val" id="metricChlorosis" style="color: var(--amber-warning);">18%</div>
+              <div class="metric-lbl">Chlorosis</div>
             </div>
-          </div>
-
-          <!-- Pressure -->
-          <div class="card metric-card">
-            <div class="metric-header">
-              <span class="metric-title"><i class="fa-solid fa-gauge-high"></i> Pressure</span>
+            <div class="metric-card">
+              <div class="metric-val" id="metricNecrosis" style="color: var(--red-danger);">17%</div>
+              <div class="metric-lbl">Necrotic Lesion</div>
             </div>
-            <div class="pressure-body">
-              <span id="pressureValue" class="metric-big">-- hPa</span>
-              <span id="pressureStatus" class="metric-sub">Normal level</span>
+            <div class="metric-card">
+              <div class="metric-val" id="metricInfected" style="color: #f43f5e;">35%</div>
+              <div class="metric-lbl">Infected Area</div>
             </div>
           </div>
 
-          <!-- Visibility -->
-          <div class="card metric-card">
-            <div class="metric-header">
-              <span class="metric-title"><i class="fa-solid fa-eye"></i> Visibility</span>
-            </div>
-            <div class="visibility-body">
-              <span id="visibilityValue" class="metric-big">-- km</span>
-              <span id="visibilityStatus" class="metric-sub">Clear view</span>
-            </div>
+          <!-- Treatment Action Plan Tabs -->
+          <div class="action-tabs">
+            <button class="tab-btn active" onclick="switchActionTab('organic')">🌿 Organic Remedies</button>
+            <button class="tab-btn" onclick="switchActionTab('chemical')">🧪 Chemical Dosage</button>
+            <button class="tab-btn" onclick="switchActionTab('prevention')">🛡️ Prevention</button>
           </div>
 
-          <!-- Cloud Cover -->
-          <div class="card metric-card">
-            <div class="metric-header">
-              <span class="metric-title"><i class="fa-solid fa-cloud"></i> Cloud Cover</span>
-            </div>
-            <div class="cloud-body">
-              <span id="cloudCoverValue" class="metric-big">--%</span>
-              <div class="progress-bar-container">
-                <div id="cloudBar" class="progress-bar-fill" style="width: 0%;"></div>
-              </div>
-              <span id="cloudStatus" class="metric-sub">Clear skies</span>
-            </div>
+          <div class="tab-pane active" id="paneOrganic">
+            <ul class="treatment-list" id="listOrganic">
+              <li>Spray Copper Hydroxide (2g/Liter water) every 7 days.</li>
+              <li>Apply 5% Neem oil extract solution to suppress spore germination.</li>
+              <li>Remove and safely burn severely infected lower leaves.</li>
+            </ul>
           </div>
-        </section>
+
+          <div class="tab-pane" id="paneChemical">
+            <ul class="treatment-list" id="listChemical">
+              <li>Mancozeb 75% WP @ 2.5g per Liter of water for preventive cover.</li>
+              <li>Metalaxyl + Mancozeb (Ridomil Gold) @ 2g/L for systemic curative action.</li>
+            </ul>
+          </div>
+
+          <div class="tab-pane" id="panePrevention">
+            <ul class="treatment-list" id="listPrevention">
+              <li>Ensure plant spacing of at least 45-60cm to maximize airflow.</li>
+              <li>Use drip irrigation to prevent wet foliage.</li>
+              <li>Practice 3-year crop rotation with non-solanaceous crops.</li>
+            </ul>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- MICRO-CLIMATE DISEASE RISK CALCULATOR -->
+  <section class="main-container" id="risk-section" style="padding-top: 0;">
+    <div class="section-title-wrapper">
+      <h2 class="section-title">Micro-Climate Disease Outbreak Predictor</h2>
+    </div>
+
+    <div class="glass-card risk-widget-card">
+      <div>
+        <h3 style="font-size: 1.2rem; margin-bottom: 0.5rem;">Field Environmental Controls</h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.5rem;">Adjust ambient field temperature and air humidity to calculate fungal spore germination risk for your crop.</p>
+
+        <div class="slider-group">
+          <div class="slider-label-flex">
+            <span>Ambient Field Temperature:</span>
+            <span id="lblTemp" style="color: var(--mint-accent);">20°C</span>
+          </div>
+          <input type="range" min="5" max="45" value="20" class="custom-slider" id="sliderTemp" oninput="updateRiskCalculator()">
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-label-flex">
+            <span>Relative Air Humidity (% RH):</span>
+            <span id="lblHumidity" style="color: var(--mint-accent);">85%</span>
+          </div>
+          <input type="range" min="20" max="100" value="85" class="custom-slider" id="sliderHumidity" oninput="updateRiskCalculator()">
+        </div>
       </div>
 
-      <!-- Interactive Map Section -->
-      <section class="card map-section">
-        <div class="card-header">
-          <h3><i class="fa-solid fa-map-location-dot"></i> Interactive Location Map</h3>
-          <span class="map-subtitle" id="mapCoordsLabel">Coordinates: --, --</span>
-        </div>
-        <div id="weatherMap" class="weather-map-container"></div>
-      </section>
-    </main>
+      <div class="risk-gauge-box">
+        <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Outbreak Risk Status</div>
+        <div class="risk-level-badge" id="txtRiskStatus" style="color: var(--red-danger);">HIGH OUTBREAK RISK (88%)</div>
+        <p id="txtRiskDesc" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.75rem;">Favorable weather for Late Blight & Rust fungal spores. High humidity above 80% creates ideal germination film on leaves.</p>
+      </div>
+    </div>
+  </section>
 
-    <!-- Floating Urdu Voice Assistant Button -->
-    <button id="floatingUrduMicBtn" class="floating-urdu-mic" title="Urdu Voice Assistant — آوازِ موسم">
-      <i class="fa-solid fa-microphone-lines"></i>
-      <span>آوازِ موسم</span>
-    </button>
+  <!-- CROP DISEASE KNOWLEDGE BASE -->
+  <section class="main-container" id="kb-section" style="padding-top: 0;">
+    <div class="section-title-wrapper">
+      <h2 class="section-title">Crop Disease Knowledge Base</h2>
+    </div>
 
-    <!-- Footer -->
-    <footer class="app-footer">
-      <p>SkyCast Weather &copy; 2026. Powered by Open-Meteo API & OpenStreetMap.</p>
-    </footer>
+    <div class="kb-filter-bar">
+      <button class="kb-filter-btn active" onclick="filterKnowledgeBase('All')">All Crops</button>
+      <button class="kb-filter-btn" onclick="filterKnowledgeBase('Tomato')">Tomato</button>
+      <button class="kb-filter-btn" onclick="filterKnowledgeBase('Corn (Maize)')">Corn</button>
+      <button class="kb-filter-btn" onclick="filterKnowledgeBase('Potato')">Potato</button>
+      <button class="kb-filter-btn" onclick="filterKnowledgeBase('Wheat')">Wheat</button>
+      <button class="kb-filter-btn" onclick="filterKnowledgeBase('Cotton')">Cotton</button>
+      <button class="kb-filter-btn" onclick="filterKnowledgeBase('Apple')">Apple</button>
+    </div>
+
+    <div class="kb-grid" id="kbGridContainer">
+      <!-- Injected via JavaScript -->
+    </div>
+  </section>
+
+  <!-- SCAN HISTORY LOG -->
+  <section class="main-container" id="history-section" style="padding-top: 0;">
+    <div class="section-title-wrapper">
+      <h2 class="section-title">Field Scan History & Audit Log</h2>
+      <button class="btn-outline" onclick="clearScanHistory()" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;">Clear History</button>
+    </div>
+
+    <div class="glass-card history-table-container">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Date & Time</th>
+            <th>Crop</th>
+            <th>Diagnosed Pathogen</th>
+            <th>Confidence</th>
+            <th>Severity</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="historyTableBody">
+          <!-- Injected via JavaScript -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- AI AGRONOMIST VOICE FLOATING FAB & CHAT DRAWER -->
+  <button class="agri-voice-fab" id="fabVoice" onclick="toggleVoiceDrawer()" title="Ask AI Agronomist Voice Assistant">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+  </button>
+
+  <div class="voice-drawer" id="voiceDrawer">
+    <div class="voice-drawer-header">
+      <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700;">
+        <span style="color: var(--mint-accent);">🤖 AI Agronomist</span>
+      </div>
+      <button onclick="toggleVoiceDrawer()" style="background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer;">✕</button>
+    </div>
+
+    <div class="chat-messages-box" id="chatMessages">
+      <div class="chat-msg bot">
+        Hello! I am your AI Agronomist. Tap the mic button to speak in English or Urdu, or type your farming questions here!
+      </div>
+    </div>
+
+    <div class="chat-input-bar">
+      <input type="text" class="chat-input" id="txtChatInput" placeholder="Ask about dosages, spray timing..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+      <button class="btn-emerald" style="padding: 0.5rem 0.85rem;" onclick="toggleMicRecording()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- DISEASE DETAILS MODAL -->
+  <div class="modal-backdrop" id="diseaseModal">
+    <div class="modal-content-card">
+      <button class="modal-close-btn" onclick="closeDiseaseModal()">✕</button>
+      <div id="modalCardBody"></div>
+    </div>
   </div>
 
   <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="chart-manager.js"></script>
-  <script src="map-manager.js"></script>
-  <script src="disaster-alert-manager.js"></script>
-  <script src="prediction-engine.js"></script>
-  <script src="urdu-voice-assistant.js"></script>
+  <script src="disease-database.js"></script>
+  <script src="ai-classifier.js"></script>
+  <script src="agri-voice-assistant.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

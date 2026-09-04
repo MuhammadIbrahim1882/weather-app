@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TruthGuard AI - Advanced Fake News & Misinformation Detector powered by heuristic NLP, emotional bias parsing, and evidence attribution modeling.">
+  <meta name="keywords" content="fake news detector, misinformation checker, fact check, credibility meter, clickbait detector, NLP analysis">
+  <meta name="author" content="TruthGuard AI">
+  <title>TruthGuard AI | Intelligent Fake News & Misinformation Detector</title>
+  
+  <!-- Modern Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300f0ff'><path d='M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5zm-2 16l-4-4 1.41-1.41L10 15.17l6.59-6.59L18 10l-8 8z'/></svg>" type="image/svg+xml">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Header Bar -->
+    <header class="app-header">
+      <div class="brand-container">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5zm-2 16l-4-4 1.41-1.41L10 15.17l6.59-6.59L18 10l-8 8z"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>TruthGuard AI <span class="brand-badge">v2.4 PRO</span></h1>
+          <p>Real-Time Misinformation & Credibility Intelligence Radar</p>
+        </div>
+      </div>
+
+      <div class="header-telemetry">
+        <div class="telemetry-item">
+          <span class="status-dot"></span>
+          <span>NLP Heuristics: <strong>ACTIVE</strong></span>
+        </div>
+        <button id="btn-history-toggle" class="btn-header-action" title="View Recent Verifications">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          Scan History (<span id="history-count">0</span>)
+        </button>
+      </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="hero-banner">
+      <div class="hero-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+        Multi-Vector Cognitive & Source Verification
+      </div>
+      <h2 class="hero-title">Detect Misinformation Before It Spreads</h2>
+      <p class="hero-subtitle">Evaluate articles, viral claims, and news headlines against sensationalism patterns, emotional coercion, unattributed citations, and domain reputational trust.</p>
+    </section>
+
+    <!-- Main Workspace Grid -->
+    <main class="main-grid">
+      <!-- Left Column: Input Workspace -->
+      <section class="glass-panel input-panel">
+        <div class="panel-header">
+          <h3 class="panel-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            Verification Console
+          </h3>
+          <span id="reading-time" class="input-counter">0 words</span>
+        </div>
+
+        <!-- Mode Navigation Tabs -->
+        <div class="tabs-nav" role="tablist">
+          <button class="tab-btn active" data-mode="article" role="tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            Article / Full Text
+          </button>
+          <button class="tab-btn" data-mode="headline" role="tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="4" y1="9" x2="20" y2="9"></line>
+              <line x1="4" y1="15" x2="20" y2="15"></line>
+              <line x1="10" y1="3" x2="8" y2="21"></line>
+              <line x1="16" y1="3" x2="14" y2="21"></line>
+            </svg>
+            Headline Quick-Check
+          </button>
+          <button class="tab-btn" data-mode="url" role="tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+            URL & Domain Trust
+          </button>
+        </div>
+
+        <!-- Text Input Area -->
+        <div class="input-group">
+          <div class="input-label">
+            <span id="input-prompt-label">Paste article body or social media post content:</span>
+            <span id="char-counter" class="input-counter">0 characters</span>
+          </div>
+
+          <div class="textarea-wrapper" id="textarea-container">
+            <textarea 
+              id="main-input-text" 
+              class="cyber-textarea" 
+              placeholder="Paste article text, breaking social media claim, or news report here to run comprehensive AI credibility screening..."
+              spellcheck="false"
+            ></textarea>
+            
+            <div class="textarea-actions">
+              <button id="btn-voice-input" class="icon-btn-micro" title="Dictate claim via Voice">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                  <line x1="12" y1="19" x2="12" y2="23"></line>
+                  <line x1="8" y1="23" x2="16" y2="23"></line>
+                </svg>
+              </button>
+              <button id="btn-clear-input" class="icon-btn-micro" title="Clear text">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- URL Secondary Input for source attribution -->
+          <div class="input-group" style="margin-top: 1rem;">
+            <div class="input-label">
+              <span>Source URL or Domain (Optional):</span>
+            </div>
+            <input 
+              type="url" 
+              id="source-url-input" 
+              class="cyber-input" 
+              placeholder="e.g. https://www.reuters.com/article... or domain.xyz"
+            >
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-row">
+          <button id="btn-run-analysis" class="btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            Execute Credibility Analysis
+          </button>
+          <button id="btn-paste-clipboard" class="btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            Paste
+          </button>
+        </div>
+
+        <!-- Curated Sample Presets -->
+        <div class="samples-section">
+          <div class="section-subtitle">
+            <span>Instant Test Presets</span>
+            <span style="color: var(--text-muted); font-size: 0.72rem; text-transform: none;">Click to load & evaluate</span>
+          </div>
+          <div class="samples-grid" id="samples-container">
+            <!-- Populated via samples.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Credibility Telemetry Dashboard -->
+      <section class="results-dashboard">
+        <!-- Truth Index Gauge Card -->
+        <div class="glass-panel truth-meter-card">
+          <div class="panel-header" style="justify-content: center; border-bottom: none; margin-bottom: 0.5rem;">
+            <h3 class="panel-title">AI Truth & Reliability Index</h3>
+          </div>
+
+          <!-- Radial Animated SVG Meter -->
+          <div class="radial-meter-container">
+            <svg class="radial-svg" viewBox="0 0 200 200">
+              <circle class="meter-bg-circle" cx="100" cy="100" r="90"></circle>
+              <circle id="meter-progress-ring" class="meter-progress-circle" cx="100" cy="100" r="90"></circle>
+            </svg>
+            <div class="meter-inner-content">
+              <div class="score-number" id="meter-score-display">--</div>
+              <div class="score-caption">Credibility Score</div>
+            </div>
+          </div>
+
+          <!-- Tier Badge -->
+          <div id="tier-badge-container">
+            <span class="tier-badge secondary" id="tier-badge">Awaiting Analysis</span>
+          </div>
+          <p class="tier-explanation" id="tier-summary-text">
+            Provide text above or pick a sample preset to compute multi-factor NLP veracity metrics.
+          </p>
+        </div>
+
+        <!-- Sub-Metrics Gauges -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+              Core Linguistic Indicators
+            </h3>
+          </div>
+
+          <div class="sub-metrics-grid">
+            <!-- Sensationalism & Hyperbole -->
+            <div class="metric-box">
+              <div class="metric-box-top">
+                <span class="metric-title">Sensationalism & Clickbait</span>
+                <span class="metric-val" id="val-sensationalism">0%</span>
+              </div>
+              <div class="progress-bar-track">
+                <div id="bar-sensationalism" class="progress-bar-fill rose" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <!-- Emotional / Urgency Bias -->
+            <div class="metric-box">
+              <div class="metric-box-top">
+                <span class="metric-title">Emotional Coercion & Panic</span>
+                <span class="metric-val" id="val-emotional">0%</span>
+              </div>
+              <div class="progress-bar-track">
+                <div id="bar-emotional" class="progress-bar-fill amber" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <!-- Evidence & Attributions -->
+            <div class="metric-box">
+              <div class="metric-box-top">
+                <span class="metric-title">Evidence & Citations</span>
+                <span class="metric-val" id="val-evidence">0%</span>
+              </div>
+              <div class="progress-bar-track">
+                <div id="bar-evidence" class="progress-bar-fill emerald" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <!-- Objectivity & Neutrality -->
+            <div class="metric-box">
+              <div class="metric-box-top">
+                <span class="metric-title">Journalistic Objectivity</span>
+                <span class="metric-val" id="val-objectivity">0%</span>
+              </div>
+              <div class="progress-bar-track">
+                <div id="bar-objectivity" class="progress-bar-fill cyan" style="width: 0%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Diagnostic Findings -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              Key Diagnostic Findings
+            </h3>
+            <span id="diagnostic-count" class="input-counter">0 flags</span>
+          </div>
+
+          <div class="findings-list" id="findings-container">
+            <div class="finding-item info">
+              <div class="finding-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+              </div>
+              <div class="finding-content">
+                <h4>Heuristic Engine Ready</h4>
+                <p>Paste text or load a preset on the left to review automated linguistic flags and source telemetry.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bottom Full-Width Section: Explainable Text Inspector -->
+      <section class="glass-panel inspector-panel">
+        <div class="panel-header">
+          <h3 class="panel-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+            </svg>
+            Explainable AI: In-Text Manipulation & Evidence Markers
+          </h3>
+          <div class="textarea-actions" style="position: static;">
+            <button id="btn-copy-report" class="btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              Copy Dossier
+            </button>
+            <button id="btn-export-pdf" class="btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                <rect x="6" y="14" width="12" height="8"></rect>
+              </svg>
+              Print Report
+            </button>
+          </div>
+        </div>
+
+        <!-- Indicator Legend -->
+        <div class="legend-bar">
+          <div class="legend-item">
+            <span class="legend-swatch sensational"></span>
+            <span>Sensational / Hyperbolic Claim</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch urgency"></span>
+            <span>Manufactured Urgency & Panic</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch evidence"></span>
+            <span>Empirical / Scientific Term</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch attribution"></span>
+            <span>Journalistic Attribution / Quote</span>
+          </div>
+        </div>
+
+        <!-- Marked Up Text Container -->
+        <div class="annotated-text-viewer" id="annotated-text-display">
+          <p style="color: var(--text-dim); font-style: italic;">
+            Analyzed text with interactive highlighted spans will appear here once verified. Hover over highlighted phrases to see specific reasoning triggers.
+          </p>
+        </div>
+      </section>
+
+      <!-- Fact-Checking Action Toolkit -->
+      <section class="glass-panel inspector-panel" style="margin-top: 0;">
+        <div class="panel-header">
+          <h3 class="panel-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            Cross-Verification & Fact-Checking Toolkit
+          </h3>
+        </div>
+
+        <div class="toolkit-grid">
+          <a href="https://www.reuters.com/fact-check/" target="_blank" rel="noopener noreferrer" class="toolkit-card">
+            <div class="toolkit-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+            </div>
+            <div class="toolkit-info">
+              <h4>Reuters Fact Check</h4>
+              <p>Independent global investigative unit debunking viral hoaxes, altered media, and deepfakes.</p>
+            </div>
+          </a>
+
+          <a href="https://www.snopes.com" target="_blank" rel="noopener noreferrer" class="toolkit-card">
+            <div class="toolkit-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </div>
+            <div class="toolkit-info">
+              <h4>Snopes</h4>
+              <p>The definitive reference archive for urban legends, medical misconceptions, and internet rumors.</p>
+            </div>
+          </a>
+
+          <a href="https://toolbox.google.com/factcheck/explorer" target="_blank" rel="noopener noreferrer" class="toolkit-card">
+            <div class="toolkit-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </div>
+            <div class="toolkit-info">
+              <h4>Google Fact Check Explorer</h4>
+              <p>Search indexed claims across dozens of verified global fact-checking signatories.</p>
+            </div>
+          </a>
+
+          <a href="https://tineye.com" target="_blank" rel="noopener noreferrer" class="toolkit-card">
+            <div class="toolkit-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+            </div>
+            <div class="toolkit-info">
+              <h4>TinEye Image Verifier</h4>
+              <p>Reverse-search images used in articles to discover their original source and publication date.</p>
+            </div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- History Drawer Modal -->
+  <div class="modal-backdrop" id="history-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Recent Verifications History</h3>
+        <button id="modal-close" class="modal-close-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <span style="font-size: 0.8rem; color: var(--text-dim);">Stored locally on your device</span>
+          <button id="btn-clear-history" class="btn-secondary" style="padding: 0.3rem 0.7rem; font-size: 0.75rem;">Clear All</button>
+        </div>
+        <div class="history-list" id="history-items-container">
+          <p style="color: var(--text-dim); text-align: center; font-size: 0.85rem; padding: 2rem 0;">No saved verifications yet.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-notice" id="toast-notice">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+    <span id="toast-msg">Notification message</span>
+  </div>
+
+  <!-- Scripts -->
+  <script src="samples.js"></script>
+  <script src="analyzer.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
